@@ -1,0 +1,44 @@
+<!-- workout/templates/workout/workout_settings.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Settings</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Workout Settings</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="rep_count">Rep Count:</label>
+        <input type="number" name="rep_count" required>
+
+        <label>Time Limit:</label>
+        <label><input type="radio" name="time_limit" value="60" required> 1 min</label>
+        <label><input type="radio" name="time_limit" value="180"> 3 min</label>
+        <label><input type="radio" name="time_limit" value="300"> 5 min</label>
+        <label><input type="radio" name="time_limit" value="420"> 7 min</label>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
