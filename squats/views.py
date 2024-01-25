@@ -183,8 +183,8 @@ mp_pose = mp.solutions.pose
 
 audio_dir = '/home/amaanshahk/Desktop/qwerty/squats/static/audio'
 
-up_audio_file = os.path.join(audio_dir, 'up.mp3')
-down_audio_file = os.path.join(audio_dir, 'down.mp3')
+up_audio_file = os.path.join(audio_dir, 'come-up-higher.mp3')
+down_audio_file = os.path.join(audio_dir, 'go_deeper.mp3')
 
 pygame.mixer.init()
 
@@ -245,9 +245,9 @@ def generate_frames():
     # Time and rep count variables
     start_time = time.time()  # Initialize start_time here
     total_reps = 10  # Set your desired total reps
-    time_limit = 30  # Set your desired time limit in seconds
+    time_limit = 300  # Set your desired time limit in seconds
 
-    with mp_pose.Pose(min_detection_confidence=0.8, min_tracking_confidence=0.1) as pose:
+    with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.1) as pose:
         while cap.isOpened():
             ret, frame = cap.read()
 
@@ -324,6 +324,40 @@ def generate_frames():
                                            mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
                                            mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2)
                                            )
+                if avg_knee_angle > squat_up_threshold:
+                    feedback_message = "Go Deeper"
+                    feedback_color = (0, 0, 255)  # Red color for "Go Deeper"
+                    # feedback_sound = down_sound
+                elif avg_knee_angle < squat_down_threshold:
+                    feedback_message = "Come Up Higher"
+                    feedback_color = (255, 0, 0)  # Blue color for "Come Up Higher"
+                    # feedback_sound = up_sound
+                else:
+                    feedback_message = "Good Depth"
+                    feedback_color = (0, 255, 0)  # Green color for "Good Depth"
+                    # feedback_sound = None  # No sound for "Good Depth"
+
+                # Display feedback message
+                cv2.putText(image, feedback_message, (10, 60),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.8, feedback_color, 2, cv2.LINE_AA)
+
+                # Calculate text size to center arrows below the message
+                text_size = cv2.getTextSize(feedback_message, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)[0]
+                text_width, text_height = text_size
+
+                # Add visual indicators (arrows) based on feedback below the message
+                arrow_start_x = 10 + (text_width // 2)
+                arrow_start_y = 80 + text_height  # Place below the feedback message
+
+                if avg_knee_angle > squat_up_threshold:
+                    cv2.arrowedLine(image, (arrow_start_x, arrow_start_y), (arrow_start_x, arrow_start_y + 25),
+                                    (0, 0, 255), 4)  # Red arrow pointing down
+                elif avg_knee_angle < squat_down_threshold:
+                    cv2.arrowedLine(image, (arrow_start_x, arrow_start_y), (arrow_start_x, arrow_start_y - 25),
+                                    (255, 0, 0), 4)  # Blue arrow pointing up
+                # # Play audio feedback
+                # if feedback_sound:
+                #     feedback_sound.play()
 
             except Exception as e:
                 print("Error:", e)
