@@ -68,7 +68,7 @@ def bicep_curls_logic(landmarks, stage, angle, counter, audio_sound, audio_playe
     # Bicep curl counter logic
     if angle > 165:
         stage = "down"
-    if angle < 25 and stage == 'down':
+    if angle < 20 and stage == 'down':
         stage = "up"
         counter += 1
         print("Rep Count:", counter)
