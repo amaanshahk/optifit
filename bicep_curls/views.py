@@ -37,7 +37,7 @@ right_stage = None
 # Time and rep count variables
 start_time = None
 total_reps = 10
-time_limit = 120
+time_limit = 30
 
 def calculate_angle(a, b, c):
     a = np.array(a)
