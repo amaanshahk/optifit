@@ -15,8 +15,8 @@ mp_pose = mp.solutions.pose
 audio_dir = '/home/amaanshahk/Desktop/qwerty/bicep_curls/static/audio'
 
 # Define audio file paths for left arm
-left_down = os.path.join(audio_dir, 'down.mp3')
-right_down = os.path.join(audio_dir, 'down.mp3')
+left_down = os.path.join(audio_dir, 'lower-arms.mp3')
+right_down = os.path.join(audio_dir, 'lower-arms.mp3')
 
 pygame.mixer.init()
 
@@ -68,7 +68,7 @@ def bicep_curls_logic(landmarks, stage, angle, counter, audio_sound, audio_playe
     # Bicep curl counter logic
     if angle > 165:
         stage = "down"
-    if angle < 20 and stage == 'down':
+    if angle < 25 and stage == 'down':
         stage = "up"
         counter += 1
         print("Rep Count:", counter)
@@ -93,6 +93,7 @@ def bicep_curls_logic(landmarks, stage, angle, counter, audio_sound, audio_playe
 
     return stage, counter, audio_played
 
+
 def generate_frames():
     global left_counter, right_counter, left_stage, right_stage, left_down_audio_played, right_down_audio_played, start_time
 
@@ -107,7 +108,7 @@ def generate_frames():
     right_down_audio_played = False
     start_time = None
 
-    with mp_pose.Pose(min_detection_confidence=0.8, min_tracking_confidence=0.2) as pose:
+    with mp_pose.Pose(min_detection_confidence=0.9, min_tracking_confidence=0.9) as pose:
         while cap.isOpened():
             ret, frame = cap.read()
 
@@ -158,14 +159,68 @@ def generate_frames():
                     landmarks, right_stage, right_angle, right_counter, right_down_sound, right_down_audio_played
                 )
 
+                # Visual Feedback for Left Arm
+                if left_stage == 'down':
+                    feedback_message = "Lift Higher"
+                    feedback_color = (0, 0, 255)  # Blue color for "Lift Higher"
+                    arrow_direction = -1  # Arrow pointing up
+                elif left_stage == 'up':
+                    feedback_message = "Lower Arms"
+                    feedback_color = (255, 0, 0)  # Red color for "Lower Arms"
+                    arrow_direction = 1  # Arrow pointing down
+
+                # Display feedback message on the left side
+                cv2.putText(image, feedback_message, (10, 75),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.8, feedback_color, 2, cv2.LINE_AA)
+
+                # Calculate text size to center arrows below the message
+                text_size = cv2.getTextSize(feedback_message, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)[0]
+                text_width, text_height = text_size
+
+                # Add visual indicators (arrows) based on feedback below the message
+                arrow_start_x = 10 + (text_width // 2)
+                arrow_start_y = 100 + text_height  # Place below the feedback message
+
+                cv2.arrowedLine(image, (arrow_start_x, arrow_start_y),
+                                (arrow_start_x, arrow_start_y + arrow_direction * 25),
+                                (0, 0, 255), 4)  # Blue arrow pointing up or Red arrow pointing down
+
+                # Display left arm counter on the left side
+                cv2.putText(image, 'Left Arm Reps: ' + str(left_counter), (10, 25),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+
+                # Visual Feedback for Right Arm
+                if right_stage == 'down':
+                    feedback_message = "Lift Higher"
+                    feedback_color = (0, 0, 255)  # Blue color for "Lift Higher"
+                    arrow_direction = -1  # Arrow pointing up
+                elif right_stage == 'up':
+                    feedback_message = "Lower Arms"
+                    feedback_color = (255, 0, 0)  # Red color for "Lower Arms"
+                    arrow_direction = 1  # Arrow pointing down
+
+                # Display feedback message on the right side
+                cv2.putText(image, feedback_message, (480, 75),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.8, feedback_color, 2, cv2.LINE_AA)
+
+                # Calculate text size to center arrows below the message
+                text_size = cv2.getTextSize(feedback_message, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)[0]
+                text_width, text_height = text_size
+
+                # Add visual indicators (arrows) based on feedback below the message
+                arrow_start_x = 480 + (text_width // 2)
+                arrow_start_y = 100 + text_height  # Place below the feedback message
+
+                cv2.arrowedLine(image, (arrow_start_x, arrow_start_y),
+                                (arrow_start_x, arrow_start_y + arrow_direction * 25),
+                                (0, 0, 255), 4)  # Blue arrow pointing up or Red arrow pointing down
+
+                # Display right arm counter on the right side
+                cv2.putText(image, 'Right Arm Reps: ' + str(right_counter), (480, 25),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+
             except Exception as e:
                 print("Error:", e)
-
-            cv2.putText(image, 'Left Arm Reps: ' + str(left_counter), (10, 25),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
-
-            cv2.putText(image, 'Right Arm Reps: ' + str(right_counter), (10, 50),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
 
             # Render detections
             mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
