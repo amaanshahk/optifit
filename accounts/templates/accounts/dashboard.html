@@ -1,0 +1,43 @@
+<!-- accounts/templates/accounts/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f2f2f2;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .logout-link {
+            color: #ff0000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Welcome to Your Dashboard, {{ user.first_name }}</h2>
+        <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+    </div>
+
+    <p>Here, you can add content or features relevant to the authenticated user.</p>
+    <p>For example, you can display user-specific data or provide links to relevant actions.</p>
+</body>
+</html>
