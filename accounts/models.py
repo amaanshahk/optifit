@@ -34,3 +34,20 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+# accounts/models.py
+from django.db import models
+from django.contrib.auth import get_user_model
+
+CustomUser = get_user_model()
+
+class SquatCustomization(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    rep_count = models.IntegerField()
+    time_limit = models.IntegerField()
+
+class BicepCurlCustomization(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    rep_count = models.IntegerField()
+    time_limit = models.IntegerField()
+

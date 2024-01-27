@@ -1,0 +1,25 @@
+<!-- accounts/templates/accounts/customize_routine.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customize Routine</title>
+</head>
+<body>
+    <h2>Customize Routine</h2>
+    
+    <form method="post" action="{% url 'customize_routine' %}">
+        {% csrf_token %}
+        
+        <h3>Squat</h3>
+        {{ squat_form.as_p }}
+        
+        <h3>Bicep Curl</h3>
+        {{ bicep_curl_form.as_p }}
+        
+        <button type="submit">Save Customization</button>
+    </form>
+</body>
+</html>
+

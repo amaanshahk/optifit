@@ -1,6 +1,6 @@
-# workout/views.py
 from django.shortcuts import render
+from .models import WorkoutSettings
 
 def workout_settings(request):
-    # Add your view logic here
-    return render(request, 'workout/workout_settings.html')  # Replace with the actual template name
+    workout_data = WorkoutSettings.objects.all()
+    return render(request, 'workout/settings.html', {'workout_data': workout_data})

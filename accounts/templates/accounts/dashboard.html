@@ -37,6 +37,18 @@
         <a href="{% url 'logout' %}" class="logout-link">Logout</a>
     </div>
 
+    <div id="sidebar">
+        <ul>
+            <li><a href="{% url 'user_profile' %}">User Profile</a></li>
+            <li><a href="{% url 'customize_routine' %}">Customize Routine</a></li>
+            <li><a href="{% url 'shared_with_you' %}">Shared with You</a></li>
+        </ul>
+    </div>
+
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+    
     <p>Here, you can add content or features relevant to the authenticated user.</p>
     <p>For example, you can display user-specific data or provide links to relevant actions.</p>
 </body>
