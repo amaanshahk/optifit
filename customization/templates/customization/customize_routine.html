@@ -1,0 +1,44 @@
+<!-- customization/templates/customization/customize_routine.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customize Routine</title>
+    <!-- Add other styles and scripts as needed -->
+    <style>
+        /* Add some CSS to style the form layout */
+        .workout-item {
+            margin-bottom: 10px;
+        }
+
+        /* Style for the save routine button */
+        #save-routine-button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Customize Routine</h2>
+
+    <form method="post" action="{% url 'customize_routine' %}" id="workout-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div id="workouts-container">
+            <!-- Existing workout forms -->
+            {% for workout in workouts %}
+                <div class="workout-item">
+                    <p>{{ workout }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        <!-- Add More Workout button -->
+        <button type="submit" name="add_more_workout" id="add-workout-button">Add More Workout</button>
+
+        <!-- Save Routine button -->
+        <input type="submit" name="save_routine" id="save-routine-button" value="Save Routine">
+
+    </form>
+</body>
+</html>
