@@ -16,6 +16,11 @@
         #save-routine-button {
             margin-top: 10px;
         }
+
+        /* Style for the remove workout button */
+        .remove-workout-button {
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -30,6 +35,7 @@
             {% for workout in workouts %}
                 <div class="workout-item">
                     <p>{{ workout }}</p>
+                    <button type="submit" name="remove_workout" value="{{ workout.id }}" class="remove-workout-button">Remove</button>
                 </div>
             {% endfor %}
         </div>
