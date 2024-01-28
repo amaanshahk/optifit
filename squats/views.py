@@ -74,8 +74,8 @@ def generate_frames():
 
     # Time and rep count variables
     start_time = time.time()  # Initialize start_time here
-    total_reps = 10  # Set your desired total reps
-    time_limit = 300  # Set your desired time limit in seconds
+    rep_count = 5  # Set your desired total reps
+    time_limit = 120  # Set your desired time limit in seconds
 
     with mp_pose.Pose(min_detection_confidence=0.8, min_tracking_confidence=0.8) as pose:
         while cap.isOpened():
@@ -201,7 +201,7 @@ def generate_frames():
                 break
 
             # Check if the target number of reps is reached
-            if total_reps and squat_counter >= total_reps:
+            if rep_count and squat_counter >= rep_count:
                 print("Target reps reached. Total Reps:", squat_counter)
                 break
 

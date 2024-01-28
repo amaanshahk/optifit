@@ -36,8 +36,8 @@ right_stage = None
 
 # Time and rep count variables
 start_time = None
-total_reps = 100
-time_limit = 300
+rep_count = 5
+time_limit = 120
 
 def calculate_angle(a, b, c):
     a = np.array(a)
@@ -87,7 +87,7 @@ def bicep_curls_logic(landmarks, stage, angle, counter, audio_sound, audio_playe
         return 'done', counter, False  # Add 'done' stage to indicate completion
 
     # Check if the target number of reps is reached
-    if total_reps and counter >= total_reps:
+    if rep_count and counter >= rep_count:
         print("Target reps reached. Total Reps:", counter)
         return 'done', counter, False  # Add 'done' stage to indicate completion
 

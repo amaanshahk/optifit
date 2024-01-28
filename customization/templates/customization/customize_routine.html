@@ -29,7 +29,7 @@
     <form method="post" action="{% url 'customize_routine' %}" id="workout-form">
         {% csrf_token %}
         {{ form.as_p }}
-
+    
         <div id="workouts-container">
             <!-- Existing workout forms -->
             {% for workout in workouts %}
@@ -41,10 +41,23 @@
         </div>
         <!-- Add More Workout button -->
         <button type="submit" name="add_more_workout" id="add-workout-button">Add More Workout</button>
-
+    
         <!-- Save Routine button -->
         <input type="submit" name="save_routine" id="save-routine-button" value="Save Routine">
-
+    
+        <!-- Let's Workout button -->
+        {% if workouts %}
+            {% with first_workout=workouts.0 %}
+                <button type="submit" name="lets_workout" id="lets-workout-button"
+                        formaction="{% url 'workout_redirect' first_workout.exercise first_workout.rep_count first_workout.time_limit_seconds %}">
+                    Let's Workout
+                </button>
+            {% endwith %}
+        {% else %}
+            <!-- Handle the case where there are no workouts in the routine -->
+            <p>No workouts in the routine.</p>
+        {% endif %}
     </form>
+
 </body>
 </html>

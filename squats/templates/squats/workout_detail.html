@@ -1,0 +1,25 @@
+<!-- squats/templates/squats/workout_detail.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ workout.title }} Detail</title>
+</head>
+<body>
+    <h2>{{ workout.title }} Detail</h2>
+    
+    <p>Description: {{ workout.description }}</p>
+    <p>Reps: {{ workout.reps }}</p>
+    <p>Time Limit: {{ workout.time_limit }} seconds</p>
+
+    <!-- Add any other workout details as needed -->
+
+    <!-- Add a form or button to start the workout -->
+    <form method="post" action="{% url 'start_workout' workout.id %}">
+        {% csrf_token %}
+        <input type="submit" value="Start Workout">
+    </form>
+</body>
+</html>
