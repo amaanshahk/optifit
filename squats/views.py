@@ -65,7 +65,7 @@ def count_rep(counter, stage, angle, up_threshold, down_threshold):
 
     return counter, stage
 
-def generate_frames():
+def generate_frames(rep_count, time_limit):
     cap = cv2.VideoCapture(0)
     squat_counter = 0
     squat_stage = None
@@ -74,8 +74,17 @@ def generate_frames():
 
     # Time and rep count variables
     start_time = time.time()  # Initialize start_time here
-    rep_count = 5  # Set your desired total reps
-    time_limit = 120  # Set your desired time limit in seconds
+
+    if rep_count is None:
+        rep_count = 3  # Set a default value or handle it according to your application logic
+    else:
+        rep_count = int(rep_count)  # Convert time_limit to an integer
+    if time_limit is None:
+            time_limit = 120  # Set a default value or handle it according to your application logic
+    else:
+        time_limit = int(time_limit)  # Convert time_limit to an integer
+
+
 
     with mp_pose.Pose(min_detection_confidence=0.8, min_tracking_confidence=0.8) as pose:
         while cap.isOpened():
@@ -215,6 +224,16 @@ def generate_frames():
 def index(request):
     return render(request, 'squats/index.html')
 
+from django.http import StreamingHttpResponse
+
 def video_feed(request):
-    return StreamingHttpResponse(generate_frames(),
+    rep_count = request.GET.get('rep_count', 3)
+    time_limit = request.GET.get('time_limit', 120)
+
+    # Convert rep_count and time_limit to integers
+    rep_count = int(rep_count)
+    time_limit = int(time_limit)
+
+    return StreamingHttpResponse(generate_frames(rep_count, time_limit),
                                  content_type='multipart/x-mixed-replace; boundary=frame')
+
