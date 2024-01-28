@@ -36,8 +36,6 @@ right_stage = None
 
 # Time and rep count variables
 start_time = None
-rep_count = 5
-time_limit = 120
 
 def calculate_angle(a, b, c):
     a = np.array(a)
@@ -58,7 +56,7 @@ def play_audio(sound, played_flag):
         played_flag = True
     return played_flag
 
-def bicep_curls_logic(landmarks, stage, angle, counter, audio_sound, audio_played):
+def bicep_curls_logic(landmarks, stage, angle, counter, audio_sound, audio_played, rep_count, time_limit):
     global start_time, left_counter, right_counter
 
     # Initialize start time
@@ -94,7 +92,7 @@ def bicep_curls_logic(landmarks, stage, angle, counter, audio_sound, audio_playe
     return stage, counter, audio_played
 
 
-def generate_frames():
+def generate_frames(rep_count, time_limit):
     global left_counter, right_counter, left_stage, right_stage, left_down_audio_played, right_down_audio_played, start_time
 
     cap = cv2.VideoCapture(0)
@@ -108,7 +106,17 @@ def generate_frames():
     right_down_audio_played = False
     start_time = None
 
-    with mp_pose.Pose(min_detection_confidence=0.9, min_tracking_confidence=0.9) as pose:
+    if rep_count is None:
+        rep_count = 5  # Set a default value or handle it according to your application logic
+    else:
+        rep_count = int(rep_count)  # Convert time_limit to an integer
+    if time_limit is None:
+            time_limit = 120  # Set a default value or handle it according to your application logic
+    else:
+        time_limit = int(time_limit)  # Convert time_limit to an integer
+
+
+    with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         while cap.isOpened():
             ret, frame = cap.read()
 
@@ -151,12 +159,12 @@ def generate_frames():
 
                 # Bicep curl logic for left arm
                 left_stage, left_counter, left_down_audio_played = bicep_curls_logic(
-                    landmarks, left_stage, left_angle, left_counter, left_down_sound, left_down_audio_played
+                    landmarks, left_stage, left_angle, left_counter, left_down_sound, left_down_audio_played, rep_count, time_limit
                 )
 
                 # Bicep curl logic for right arm
                 right_stage, right_counter, right_down_audio_played = bicep_curls_logic(
-                    landmarks, right_stage, right_angle, right_counter, right_down_sound, right_down_audio_played
+                    landmarks, right_stage, right_angle, right_counter, right_down_sound, right_down_audio_played, rep_count, time_limit
                 )
 
                 # Visual Feedback for Left Arm
@@ -243,5 +251,13 @@ def index(request):
     return render(request, 'bicep_curls/index.html')
 
 def video_feed(request):
-    return StreamingHttpResponse(generate_frames(),
+    rep_count = request.GET.get('rep_count', 5)
+    time_limit = request.GET.get('time_limit', 120)
+
+    # Convert rep_count and time_limit to integers
+    rep_count = int(rep_count)
+    time_limit = int(time_limit)
+
+    return StreamingHttpResponse(generate_frames(rep_count, time_limit),
                                  content_type='multipart/x-mixed-replace; boundary=frame')
+

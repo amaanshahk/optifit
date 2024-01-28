@@ -53,16 +53,32 @@
 
     <script>
         var isStreaming = true;
-
+    
         document.getElementById("toggle-btn").addEventListener("click", function() {
             isStreaming = !isStreaming;
-
+    
             if (isStreaming) {
-                document.getElementById("video-feed").src = "{% url 'bicep_curls_video_feed' %}";
+                updateVideoFeed();
             } else {
                 document.getElementById("video-feed").src = "";
             }
         });
+    
+        function updateVideoFeed() {
+            var repCount = getUrlParameter('rep_count');
+            var timeLimit = getUrlParameter('time_limit');
+            var videoFeedUrl = repCount && timeLimit ? "{% url 'bicep_curls_video_feed' %}?rep_count=" + repCount + "&time_limit=" + timeLimit : "{% url 'bicep_curls_video_feed' %}";
+            document.getElementById("video-feed").src = videoFeedUrl;
+        }
+    
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+    
+        updateVideoFeed();  // Initial update
     </script>
 </body>
 </html>
