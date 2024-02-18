@@ -237,14 +237,14 @@ def generate_frames(rep_count, time_limit):
                                       mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2)
                                       )
 
-            ret, jpeg = cv2.imencode('.jpg', image)
-            frame = jpeg.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
             # Exit the loop if both arms complete the session
             if left_stage == 'done' and right_stage == 'done':
-                break
+                yield "complete"
+                return
+            ret, jpeg = cv2.imencode('.jpg', image)
+            frame = jpeg.tobytes()
+            yield frame 
+
 
     cap.release()
     
@@ -259,6 +259,5 @@ def video_feed(request):
     rep_count = int(rep_count)
     time_limit = int(time_limit)
 
-    return StreamingHttpResponse(generate_frames(rep_count, time_limit),
-                                 content_type='multipart/x-mixed-replace; boundary=frame')
+    return StreamingHttpResponse(generate_frames(rep_count, time_limit))
 
