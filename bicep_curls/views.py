@@ -12,11 +12,12 @@ mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
 # Set the path to the directory containing audio files
-audio_dir = '/home/amaanshahk/Desktop/qwerty/bicep_curls/static/audio'
+audio_dir = 'C:\\Users\\aswan\\Desktop\\optifit\\bicep_curls\\static\\audio\\lower-arms.mp3'
+
 
 # Define audio file paths for left arm
-left_down = os.path.join(audio_dir, 'lower-arms.mp3')
-right_down = os.path.join(audio_dir, 'lower-arms.mp3')
+left_down = 'C:\\Users\\aswan\\Desktop\\optifit\\bicep_curls\\static\\audio\\lower-arms.mp3'
+right_down = 'C:\\Users\\aswan\\Desktop\\optifit\\bicep_curls\\static\\audio\\lower-arms.mp3'
 
 pygame.mixer.init()
 

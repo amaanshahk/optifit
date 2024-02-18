@@ -1,86 +1,156 @@
 <!-- squats/templates/squats/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Squat Rep Counter</title>
-
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
 
-        #video-container {
-            max-width: 720px;  /* Set your desired maximum width */
-            width: 100%;
-            text-align: center;
-        }
+      #video-container {
+        max-width: 720px; /* Set your desired maximum width */
+        width: 100%;
+        text-align: center;
+      }
 
-        #video-feed {
-            width: 100%;
-        }
+      #video-feed {
+        width: 100%;
+      }
 
-        #squat-counter {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: white;
-            font-size: 18px;
-        }
+      #squat-counter {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: white;
+        font-size: 18px;
+      }
 
-        #toggle-btn {
-            margin-top: 10px;
-            padding: 5px 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+      #toggle-btn {
+        margin-top: 10px;
+        padding: 5px 10px;
+        font-size: 16px;
+        cursor: pointer;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1 id="squat-counter">Squat Rep Counter</h1>
 
     <div id="video-container">
-        <img id="video-feed" src="{% url 'video_feed' %}" alt="Video Feed">
+      <!-- <img id="video-feed" src="" alt="Video Feed" /> -->
+      <canvas id="video-canvas" style="width: 640px; height: 480px"></canvas>
     </div>
 
     <button id="toggle-btn">Start/Stop</button>
 
     <script>
-        var isStreaming = true;
-    
-        document.getElementById("toggle-btn").addEventListener("click", function() {
-            isStreaming = !isStreaming;
-    
-            if (isStreaming) {
-                updateVideoFeed();
-            } else {
-                document.getElementById("video-feed").src = "";
-            }
+      // let mediaRecorder;
+      // let startTime;
+
+      // function getImage() {
+      //   const video = document.getElementById("video-feed");
+      //   const canvas = document.getElementById("canvas2");
+      //   const context = canvas.getContext("2d");
+
+      //   canvas.width = video.videoWidth;
+      //   canvas.height = video.videoHeight;
+      //   context.drawImage(video, 0, 0);
+
+      //   // Convert canvas to image data
+      //   const imageData = canvas.toDataURL("image/png", 2000);
+
+      //   return imageData;
+      // }
+      function getFrames() {
+        cav = document.getElementById("video-canvas");
+        ctx = cav.getContext("2d");
+        fetch("{% url 'video_feed' %}").then(async (res) => {
+          reader = res.body.getReader();
+          console.log(reader);
+          function readNext() {
+            reader
+              .read()
+              .then(({ done, value }) => {
+                if (done) {
+                  console.log(value);
+                  console.log("Stream complete");
+                  window.location.href = "/complete";
+                  return;
+                }
+                const frame = new Uint8Array(value);
+                if (frame.length == 9) {
+                  console.log("TIme limit reached");
+                  window.location.href = "/complete-time-limit";
+                  return;
+                } else if (frame.length == 11) {
+                  console.log("Rep count reached");
+                  window.location.href = "/complete-rep-count";
+                  return;
+                }
+                img = new Image();
+                img.src = URL.createObjectURL(
+                  new Blob([frame], { type: "image/jpeg" })
+                );
+                img.onload = function () {
+                  ctx.drawImage(img, 0, 0, 300, 160);
+                };
+                console.log(frame);
+                readNext();
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          }
+          readNext();
         });
-    
-        function updateVideoFeed() {
-            var repCount = getUrlParameter('rep_count');
-            var timeLimit = getUrlParameter('time_limit');
-            var videoFeedUrl = repCount && timeLimit ? "{% url 'video_feed' %}?rep_count=" + repCount + "&time_limit=" + timeLimit : "{% url 'video_feed' %}";
-            document.getElementById("video-feed").src = videoFeedUrl;
-        }
-    
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            var results = regex.exec(location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-        }
-    
-        updateVideoFeed();  // Initial update
+      }
+      getFrames();
+      // setInterval(getFrames, 10);
+      // var isStreaming = true;
+
+      // document
+      //   .getElementById("toggle-btn")
+      //   .addEventListener("click", function () {
+      //     isStreaming = !isStreaming;
+
+      //     if (isStreaming) {
+      //       updateVideoFeed();
+      //     } else {
+      //       document.getElementById("video-feed").src = "";
+      //     }
+      //   });
+
+      // function updateVideoFeed() {
+      //   var repCount = getUrlParameter("rep_count");
+      //   var timeLimit = getUrlParameter("time_limit");
+      //   var videoFeedUrl =
+      //     repCount && timeLimit
+      //       ? "{% url 'video_feed' %}?rep_count=" +
+      //         repCount +
+      //         "&time_limit=" +
+      //         timeLimit
+      //       : "{% url 'video_feed' %}";
+      //   document.getElementById("video-feed").src = videoFeedUrl;
+      // }
+
+      // function getUrlParameter(name) {
+      //   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+      //   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+      //   var results = regex.exec(location.search);
+      //   return results === null
+      //     ? ""
+      //     : decodeURIComponent(results[1].replace(/\+/g, " "));
+      // }
+
+      // updateVideoFeed(); // Initial update
     </script>
-    
-    
-</body>
+  </body>
 </html>

@@ -23,7 +23,7 @@ urlpatterns = [
     path('squats/', include('squats.urls')),
     path('bicep_curls/', include('bicep_curls.urls')),
     path('workout/', include('workout.urls')),
-    path('pushups/', include('pushups.urls')),
+    # path('pushups/', include('pushups.urls')),
     path('accounts/', include('accounts.urls')),
     path('customization/', include('customization.urls')),
 
