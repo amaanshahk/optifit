@@ -1,6 +1,6 @@
 # squats/views.py
 from django.shortcuts import render
-from django.http import StreamingHttpResponse , HttpResponse, HttpResponseRedirect
+from django.http import StreamingHttpResponse
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -11,11 +11,10 @@ import time  # Add this import
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
-audio_dir = 'qwerty/squats/staic/audio'
-audio_path = 'C:/Users/aswan/Desktop/optifit/qwerty/squats/static/audio'
+# audio_dir = '/home/amaanshahk/Desktop/qwerty/squats/static/audio'
 
-up_audio_file = 'C:\\Users\\aswan\\Desktop\\optifit\\squats\\static\\audio\\come-up-higher.mp3'
-down_audio_file ='C:\\Users\\aswan\\Desktop\\optifit\\squats\\static\\audio\\come-up-higher.mp3'
+up_audio_file = 'C:/Users/aswan/Desktop/optifit/squats/static/audio/go_deeper.mp3'
+down_audio_file = 'C:/Users/aswan/Desktop/optifit/squats/static/audio/down.mp3'
 
 pygame.mixer.init()
 
@@ -208,17 +207,18 @@ def generate_frames(rep_count, time_limit):
             # Check if the time limit is reached
             if time_limit and time.time() - start_time > time_limit:
                 print("Time limit reached. Total Reps:", squat_counter)
-                return None
+                yield "timelimit"
+                return "Time limit reached. Total Reps:"
 
             # Check if the target number of reps is reached
             if rep_count and squat_counter >= rep_count:
                 print("Target reps reached. Total Reps:", squat_counter)
-                return None
+                yield "repsreached"
+                return "Target reps reached. Total Reps:"
 
             ret, jpeg = cv2.imencode('.jpg', image)
             frame = jpeg.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+            yield frame
 
     cap.release()
 
@@ -234,9 +234,5 @@ def video_feed(request):
     # Convert rep_count and time_limit to integers
     rep_count = int(rep_count)
     time_limit = int(time_limit)
-    frame = generate_frames(rep_count, time_limit)
-    if not frame:
-        return HttpResponseRedirect("/")
-    return HttpResponse(frame,
-                                 content_type='multipart/x-mixed-replace; boundary=frame')
 
+    return StreamingHttpResponse(generate_frames(rep_count, time_limit))
