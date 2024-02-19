@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Completion</title>
+    <style>
+        /* Center alignment for text and buttons */
+        body {
+            text-align: center;
+        }
+        form {
+            display: inline-block; /* Keep forms inline */
+            margin-top: 20px;
+        }
+        button {
+            margin-right: 20px; /* Add space between buttons */
+            padding: 10px 20px; /* Increase button padding */
+            font-size: 16px; /* Increase button font size */
+        }
+    </style>
+</head>
+<body>
+    <h1>Workout Completed!</h1><br> <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <h2>"The only bad workout is the one that didn't happen." - Unknown</h2>
+
+    <!-- Buttons to go back to customize routine and indicate routine completion -->
+    <form method="get" action="{% url 'customize_routine' %}">
+        <button type="submit">Workout More!</button>
+    </form>
+    <form method="get" action="{% url 'routine_completion' %}">
+        <button type="submit">Routine Done!</button>
+    </form>
+</body>
+</html>

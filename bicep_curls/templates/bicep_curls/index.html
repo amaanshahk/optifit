@@ -1,10 +1,10 @@
 <!-- squats/templates/squats/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Squat Rep Counter</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bicep Curls Rep Counter</title>
     <style>
       body {
         display: flex;
@@ -25,7 +25,7 @@
         width: 100%;
       }
 
-      #squat-counter {
+      #bicep-counter {
         position: absolute;
         top: 10px;
         left: 10px;
@@ -40,9 +40,9 @@
         cursor: pointer;
       }
     </style>
-  </head>
-  <body>
-    <h1 id="squat-counter">Squat Rep Counter</h1>
+</head>
+<body>
+    <h1 id="bicep-counter">Bicep Curls Rep Counter</h1>
 
     <div id="video-container">
       <!-- <img id="video-feed" src="" alt="Video Feed" /> -->
@@ -52,101 +52,60 @@
     <button id="toggle-btn">Start/Stop</button>
 
     <script>
-      // let mediaRecorder;
-      // let startTime;
-
-      // function getImage() {
-      //   const video = document.getElementById("video-feed");
-      //   const canvas = document.getElementById("canvas2");
-      //   const context = canvas.getContext("2d");
-
-      //   canvas.width = video.videoWidth;
-      //   canvas.height = video.videoHeight;
-      //   context.drawImage(video, 0, 0);
-
-      //   // Convert canvas to image data
-      //   const imageData = canvas.toDataURL("image/png", 2000);
-
-      //   return imageData;
-      // }
       function getFrames() {
-        cav = document.getElementById("video-canvas");
-        ctx = cav.getContext("2d");
-        fetch("{% url 'bicep_curls_video_feed' %}").then(async (res) => {
-          reader = res.body.getReader();
+        const cav = document.getElementById("video-canvas");
+        const ctx = cav.getContext("2d");
+        
+        // Get rep_count and time_limit from the URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const rep_count = urlParams.get('rep_count');
+        const time_limit = urlParams.get('time_limit');
+
+        // Construct the URL with rep_count and time_limit query parameters
+        const videoFeedURL = `{% url 'bicep_curls_video_feed' %}?rep_count=${rep_count}&time_limit=${time_limit}`;
+
+        fetch(videoFeedURL)
+        .then(async (res) => {
+          const reader = res.body.getReader();
           console.log(reader);
+
           function readNext() {
-            reader
-              .read()
-              .then(({ done, value }) => {
-                if (done) {
-                  console.log(value);
-                  console.log("Stream complete");
-                  window.location.href = "/complete";
-                  return;
-                }
-                const frame = new Uint8Array(value);
-                if (frame.length == 8) {
-                  console.log("TIme limit reached");
-                  window.location.href = "/complete-done";
-                  return;
-                }
-                img = new Image();
-                img.src = URL.createObjectURL(
-                  new Blob([frame], { type: "image/jpeg" })
-                );
-                img.onload = function () {
-                  ctx.drawImage(img, 0, 0, 300, 160);
-                };
-                console.log(frame);
-                readNext();
-              })
-              .catch((error) => {
-                console.error(error);
-              });
+            reader.read()
+            .then(({ done, value }) => {
+              if (done) {
+                console.log("Stream complete");
+                window.location.href = "/customization/workout-completion";
+                return;
+              }
+              
+              const frame = new Uint8Array(value);
+              if (frame.length == 8) {
+                console.log("Time limit reached");
+                window.location.href = "/customization/workout-completion";
+                return;
+              }
+              
+              const img = new Image();
+              img.src = URL.createObjectURL(new Blob([frame], { type: "image/jpeg" }));
+
+              img.onload = function () {
+                ctx.drawImage(img, 0, 0, 300, 160);
+              };
+
+              console.log(frame);
+              readNext();
+            })
+            .catch((error) => {
+              console.error(error);
+            });
           }
           readNext();
+        })
+        .catch((error) => {
+          console.error(error);
         });
       }
       getFrames();
-      // setInterval(getFrames, 10);
-      // var isStreaming = true;
-
-      // document
-      //   .getElementById("toggle-btn")
-      //   .addEventListener("click", function () {
-      //     isStreaming = !isStreaming;
-
-      //     if (isStreaming) {
-      //       updateVideoFeed();
-      //     } else {
-      //       document.getElementById("video-feed").src = "";
-      //     }
-      //   });
-
-      // function updateVideoFeed() {
-      //   var repCount = getUrlParameter("rep_count");
-      //   var timeLimit = getUrlParameter("time_limit");
-      //   var videoFeedUrl =
-      //     repCount && timeLimit
-      //       ? "{% url 'video_feed' %}?rep_count=" +
-      //         repCount +
-      //         "&time_limit=" +
-      //         timeLimit
-      //       : "{% url 'video_feed' %}";
-      //   document.getElementById("video-feed").src = videoFeedUrl;
-      // }
-
-      // function getUrlParameter(name) {
-      //   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-      //   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
-      //   var results = regex.exec(location.search);
-      //   return results === null
-      //     ? ""
-      //     : decodeURIComponent(results[1].replace(/\+/g, " "));
-      // }
-
-      // updateVideoFeed(); // Initial update
     </script>
   </body>
 </html>

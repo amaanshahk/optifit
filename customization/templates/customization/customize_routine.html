@@ -29,6 +29,7 @@
     <form method="post" action="{% url 'customize_routine' %}" id="workout-form">
         {% csrf_token %}
         {{ form.as_p }}
+        <p>Give 10-15 seconds of extra to compensate the camera stream buffering</p>
     
         <div id="workouts-container">
             <!-- Existing workout forms -->
@@ -59,6 +60,7 @@
             <p>No workouts in the routine.</p>
         {% endif %}
     </form>
+    <p>You can remove the workouts from the routine once you finish performing them to move to the next one.</p>
 
 </body>
 </html>

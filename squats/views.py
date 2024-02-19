@@ -11,10 +11,10 @@ import time  # Add this import
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
-# audio_dir = '/home/amaanshahk/Desktop/qwerty/squats/static/audio'
+audio_dir = '/home/amaanshahk/Desktop/qwerty/squats/static/audio'
 
-up_audio_file = 'C:/Users/aswan/Desktop/optifit/squats/static/audio/go_deeper.mp3'
-down_audio_file = 'C:/Users/aswan/Desktop/optifit/squats/static/audio/down.mp3'
+up_audio_file = os.path.join(audio_dir, 'come-up-higher.mp3')
+down_audio_file = os.path.join(audio_dir, 'go_deeper.mp3')
 
 pygame.mixer.init()
 
@@ -222,8 +222,20 @@ def generate_frames(rep_count, time_limit):
 
     cap.release()
 
+# squats/views.py
+from django.shortcuts import render
+
 def index(request):
-    return render(request, 'squats/index.html')
+    # Get rep_count and time_limit from the request query parameters
+    rep_count = request.GET.get('rep_count', 3)
+    time_limit = request.GET.get('time_limit', 120)
+
+    # Convert rep_count and time_limit to integers
+    rep_count = int(rep_count)
+    time_limit = int(time_limit)
+
+    # Render the index.html template with the context
+    return render(request, 'squats/index.html', {'rep_count': rep_count, 'time_limit': time_limit})
 
 from django.http import StreamingHttpResponse
 

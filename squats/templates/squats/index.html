@@ -1,9 +1,9 @@
 <!-- squats/templates/squats/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Squat Rep Counter</title>
     <style>
       body {
@@ -52,27 +52,18 @@
     <button id="toggle-btn">Start/Stop</button>
 
     <script>
-      // let mediaRecorder;
-      // let startTime;
-
-      // function getImage() {
-      //   const video = document.getElementById("video-feed");
-      //   const canvas = document.getElementById("canvas2");
-      //   const context = canvas.getContext("2d");
-
-      //   canvas.width = video.videoWidth;
-      //   canvas.height = video.videoHeight;
-      //   context.drawImage(video, 0, 0);
-
-      //   // Convert canvas to image data
-      //   const imageData = canvas.toDataURL("image/png", 2000);
-
-      //   return imageData;
-      // }
       function getFrames() {
         cav = document.getElementById("video-canvas");
         ctx = cav.getContext("2d");
-        fetch("{% url 'video_feed' %}").then(async (res) => {
+        // Get rep_count and time_limit from the URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const rep_count = urlParams.get('rep_count');
+        const time_limit = urlParams.get('time_limit');
+
+        // Construct the URL with rep_count and time_limit query parameters
+        const videoFeedURL = `{% url 'video_feed' %}?rep_count=${rep_count}&time_limit=${time_limit}`;
+
+        fetch(videoFeedURL).then(async (res) => {
           reader = res.body.getReader();
           console.log(reader);
           function readNext() {
@@ -82,17 +73,17 @@
                 if (done) {
                   console.log(value);
                   console.log("Stream complete");
-                  window.location.href = "/complete";
+                  window.location.href = "/customization/workout-completion";
                   return;
                 }
                 const frame = new Uint8Array(value);
                 if (frame.length == 9) {
-                  console.log("TIme limit reached");
-                  window.location.href = "/complete-time-limit";
+                  console.log("Time limit reached");
+                  window.location.href = "/customization/workout-completion";
                   return;
                 } else if (frame.length == 11) {
                   console.log("Rep count reached");
-                  window.location.href = "/complete-rep-count";
+                  window.location.href = "/customization/workout-completion";
                   return;
                 }
                 img = new Image();
@@ -113,44 +104,6 @@
         });
       }
       getFrames();
-      // setInterval(getFrames, 10);
-      // var isStreaming = true;
-
-      // document
-      //   .getElementById("toggle-btn")
-      //   .addEventListener("click", function () {
-      //     isStreaming = !isStreaming;
-
-      //     if (isStreaming) {
-      //       updateVideoFeed();
-      //     } else {
-      //       document.getElementById("video-feed").src = "";
-      //     }
-      //   });
-
-      // function updateVideoFeed() {
-      //   var repCount = getUrlParameter("rep_count");
-      //   var timeLimit = getUrlParameter("time_limit");
-      //   var videoFeedUrl =
-      //     repCount && timeLimit
-      //       ? "{% url 'video_feed' %}?rep_count=" +
-      //         repCount +
-      //         "&time_limit=" +
-      //         timeLimit
-      //       : "{% url 'video_feed' %}";
-      //   document.getElementById("video-feed").src = videoFeedUrl;
-      // }
-
-      // function getUrlParameter(name) {
-      //   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-      //   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
-      //   var results = regex.exec(location.search);
-      //   return results === null
-      //     ? ""
-      //     : decodeURIComponent(results[1].replace(/\+/g, " "));
-      // }
-
-      // updateVideoFeed(); // Initial update
     </script>
   </body>
 </html>

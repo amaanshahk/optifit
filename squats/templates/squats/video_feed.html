@@ -1,0 +1,12 @@
+<!-- squats/templates/squats/video_feed.html -->
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... (your existing head content) -->
+</head>
+<body>
+    <img src="{% url 'generate_frames' rep_count=rep_count time_limit=time_limit %}" alt="Video Feed">
+</body>
+</html>

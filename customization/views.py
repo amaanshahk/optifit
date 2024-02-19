@@ -31,6 +31,12 @@ def customize_routine_view(request):
         elif 'remove_workout' in request.POST:
             workout_id = request.POST['remove_workout']
             workout = get_object_or_404(Workout, id=workout_id, routine=routine)
+            # Decrement the order of subsequent workouts
+            subsequent_workouts = routine.workout_set.filter(order__gt=workout.order)
+            for subsequent_workout in subsequent_workouts:
+                subsequent_workout.order -= 1
+                subsequent_workout.save()
+
             workout.delete()
 
         # Save routine
@@ -75,3 +81,13 @@ def workout_redirect_view(request, exercise_name, rep_count, time_limit):
         return redirect('/')
 
 # Add this view to your urlpatterns in customization/urls.py
+
+# customization/views.py
+
+from django.shortcuts import render
+
+def workout_completion(request):
+    return render(request, 'customization/workout_completion.html')
+
+def routine_completion(request):
+    return render(request, 'customization/routine_completion.html')
